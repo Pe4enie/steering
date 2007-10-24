@@ -119,4 +119,16 @@ public class Steering {
 		
 		return avoid;
 	}
+
+	public static Vector2D contain(Locomotion boid, Container container, double offset) {
+		Vector2D future = V.add(boid.position(), boid.velocity());
+		if(container.within(future))
+			return new Vector2D(0.0, 0.0);
+		Vector2D boundary = container.project(boid.velocity());
+		Vector2D ortho = V.sub(boundary, future);
+		double length = V.magnitude(ortho) + offset;
+		ortho = V.mult(length, ortho);
+		
+		return Steering.seek(boid, V.add(future, ortho));
+	}
 }

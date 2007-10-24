@@ -33,11 +33,26 @@ public class SteeringTest {
 
 	private Locomotion boid;
 	private Locomotion otherboid;
+	private Container mockContainer;
 	
 	@Before
 	public void setUp() {
 		boid = new SimpleLocomotion(1.0, new Vector2D(1.0, 1.0), new Vector2D(1.0, 1.0));
 		otherboid = new SimpleLocomotion(1.0, new Vector2D(0.0, 1.0), new Vector2D(1.0, 1.0));
+		
+		mockContainer = new Container() {
+			@Override
+			public boolean within(Vector2D point) {
+				if(point.x > 2)
+					return false;
+				return true;
+			}
+
+			@Override
+			public Vector2D project(Vector2D vector) {
+				return new Vector2D(2.0, 2.0);
+			}			
+		};
 	}
 	
 	@Test
@@ -103,5 +118,19 @@ public class SteeringTest {
 		Collection<Locomotion> flock = Arrays.asList(obstacle1, obstacle2);
 		Vector2D steer = Steering.obstacleAvoidance(avoider, radius, flock);
 		assertEquals(new Vector2D(0.0, -3.0), steer);
+	}
+	
+	@Test
+	public void testContainmentWithinRegion() {
+		boid.steer(new Vector2D(0.0, 15.0));
+		Vector2D steer = Steering.contain(boid, mockContainer, 1.0);
+		assertEquals(new Vector2D(0.0, 0.0), steer);
+	}
+	
+	@Test
+	public void testContainmentOutsideRegion() {
+		Locomotion outofbounder = new SimpleLocomotion(1.0, new Vector2D(0.0, 0.0), new Vector2D(3.0, 2.0));
+		Vector2D steer = Steering.contain(outofbounder, mockContainer, 1.0);
+		assertEquals(new Vector2D(1.0, 2.0), steer);
 	}
 }
