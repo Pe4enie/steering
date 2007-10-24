@@ -72,7 +72,7 @@ public class SteeringTest {
 		singleBoidMockNeighborhood = new Neighborhood() {
 			@Override
 			public Collection<Locomotion> findNearby(Locomotion boid) {
-				Locomotion boid1 = new SimpleLocomotion(1.0, new Vector2D(2.0, 1.0), new Vector2D(0.0, 0.0));
+				Locomotion boid1 = new SimpleLocomotion(1.0, new Vector2D(2.0, 1.0), new Vector2D(-1.0, 1.0));
 				return Arrays.asList(boid1);
 			}
 			@Override
@@ -84,9 +84,9 @@ public class SteeringTest {
 		fullMockNeighborhood = new Neighborhood() {
 			@Override
 			public Collection<Locomotion> findNearby(Locomotion boid) {
-				Locomotion boid1 = new SimpleLocomotion(1.0, new Vector2D(2.0, 1.0), new Vector2D(0.0, 0.0));
-				Locomotion boid2 = new SimpleLocomotion(1.0, new Vector2D(-3.0, 3.0), new Vector2D(0.0, 0.0));
-				Locomotion boid3 = new SimpleLocomotion(1.0, new Vector2D(0.0, -5.0), new Vector2D(0.0, 0.0));
+				Locomotion boid1 = new SimpleLocomotion(1.0, new Vector2D(2.0, 1.0), new Vector2D(-1.0, 1.0));
+				Locomotion boid2 = new SimpleLocomotion(1.0, new Vector2D(-3.0, 3.0), new Vector2D(-1.0, 1.5));
+				Locomotion boid3 = new SimpleLocomotion(1.0, new Vector2D(0.0, -5.0), new Vector2D(-1.0, 0.5));
 				return Arrays.asList(boid1, boid2, boid3);
 			}
 			@Override
@@ -208,6 +208,24 @@ public class SteeringTest {
 	@Test
 	public void testCohesionMultipleNeighbors() {
 		Vector2D steer = Steering.cohesion(boid, fullMockNeighborhood);
-		assertEquals(new Vector2D(-4/3, -4/3), steer);
+		assertEquals(new Vector2D((double)-4/3, (double)-4/3), steer);
+	}
+
+	@Test
+	public void testAlignmentNoNeighbors() {
+		Vector2D steer = Steering.align(boid, emptyMockNeighborhood);
+		assertEquals(new Vector2D(0.0, 0.0), steer);
+	}
+	
+	@Test
+	public void testAlignmentOneNeighbor() {
+		Vector2D steer = Steering.align(boid, singleBoidMockNeighborhood);
+		assertEquals(new Vector2D(-2.0, 0.0), steer);
+	}
+	
+	@Test
+	public void testAlignmentMultipleNeighbors() {
+		Vector2D steer = Steering.align(boid, fullMockNeighborhood);
+		assertEquals(new Vector2D(-2.0, 0.0), steer);
 	}
 }

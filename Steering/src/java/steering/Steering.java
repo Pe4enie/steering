@@ -133,7 +133,7 @@ public class Steering {
 	}
 
 	public static Vector2D separate(Locomotion boid, Neighborhood neighborhood) {
-		return separate(boid, neighborhood, 1 / neighborhood.getRadius());
+		return separate(boid, neighborhood, (double) 1 / neighborhood.getRadius());
 	}
 	
 	public static Vector2D separate(Locomotion boid, Neighborhood neighborhood, double scale) {
@@ -155,11 +155,26 @@ public class Steering {
 
 		if(neighbors.isEmpty())
 			return new Vector2D(0.0, 0.0);
+
 		Vector2D positions = new Vector2D(0.0, 0.0);
 		for(Locomotion neighbor : neighbors) {
 			positions = V.add(positions, neighbor.position());
 		}		
-		Vector2D center = V.mult(1/neighbors.size(), positions);
+		Vector2D center = V.mult((double) 1 / neighbors.size(), positions);
 		return Steering.seek(boid, center);
+	}
+
+	public static Vector2D align(Locomotion boid, Neighborhood neighborhood) {
+		Collection<Locomotion> neighbors = neighborhood.findNearby(boid);
+
+		if(neighbors.isEmpty())
+			return new Vector2D(0.0, 0.0);
+		
+		Vector2D velocities = new Vector2D(0.0, 0.0);
+		for(Locomotion neighbor : neighbors) {
+			velocities = V.add(velocities, neighbor.velocity());
+		}		
+		Vector2D desired = V.mult((double) 1 / neighbors.size(), velocities);
+		return V.sub(desired, boid.velocity());
 	}
 }
