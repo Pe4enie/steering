@@ -20,6 +20,7 @@ package steering;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -34,6 +35,9 @@ public class SteeringTest {
 	private Locomotion boid;
 	private Locomotion otherboid;
 	private Container mockContainer;
+	private Neighborhood singleBoidMockNeighborhood;
+	private Neighborhood emptyMockNeighborhood;
+	private Neighborhood fullMockNeighborhood;
 	
 	@Before
 	public void setUp() {
@@ -52,6 +56,43 @@ public class SteeringTest {
 			public Vector2D project(Vector2D vector) {
 				return new Vector2D(2.0, 2.0);
 			}			
+		};
+
+		emptyMockNeighborhood = new Neighborhood() {
+			@Override
+			public Collection<Locomotion> findNearby(Locomotion boid) {
+				return new ArrayList<Locomotion>();
+			}
+			@Override
+			public double getRadius() {
+				return 1.0;
+			}
+		};
+		
+		singleBoidMockNeighborhood = new Neighborhood() {
+			@Override
+			public Collection<Locomotion> findNearby(Locomotion boid) {
+				Locomotion boid1 = new SimpleLocomotion(1.0, new Vector2D(2.0, 1.0), new Vector2D(0.0, 0.0));
+				return Arrays.asList(boid1);
+			}
+			@Override
+			public double getRadius() {
+				return 1.0;
+			}
+		};
+
+		fullMockNeighborhood = new Neighborhood() {
+			@Override
+			public Collection<Locomotion> findNearby(Locomotion boid) {
+				Locomotion boid1 = new SimpleLocomotion(1.0, new Vector2D(2.0, 1.0), new Vector2D(0.0, 0.0));
+				Locomotion boid2 = new SimpleLocomotion(1.0, new Vector2D(-3.0, 3.0), new Vector2D(0.0, 0.0));
+				Locomotion boid3 = new SimpleLocomotion(1.0, new Vector2D(0.0, -5.0), new Vector2D(0.0, 0.0));
+				return Arrays.asList(boid1, boid2, boid3);
+			}
+			@Override
+			public double getRadius() {
+				return 1.0;
+			}
 		};
 	}
 	
@@ -132,5 +173,41 @@ public class SteeringTest {
 		Locomotion outofbounder = new SimpleLocomotion(1.0, new Vector2D(0.0, 0.0), new Vector2D(3.0, 2.0));
 		Vector2D steer = Steering.contain(outofbounder, mockContainer, 1.0);
 		assertEquals(new Vector2D(1.0, 2.0), steer);
+	}
+	
+	@Test
+	public void testSeparationNoNeighbors() {
+		Vector2D steer = Steering.separate(boid, emptyMockNeighborhood);
+		assertEquals(new Vector2D(0.0, 0.0), steer);
+	}
+	
+	@Test
+	public void testSeparationOneNeighbor() {
+		Vector2D steer = Steering.separate(boid, singleBoidMockNeighborhood);
+		assertEquals(new Vector2D(-1.0, 0.0), steer);
+	}
+	
+	@Test
+	public void testSeparationMultipleNeighbors() {
+		Vector2D steer = Steering.separate(boid, fullMockNeighborhood);
+		assertEquals(new Vector2D(4.0, 4.0), steer);		
+	}
+	
+	@Test
+	public void testCohesionNoNeighbors() {
+		Vector2D steer = Steering.cohesion(boid, emptyMockNeighborhood);
+		assertEquals(new Vector2D(0.0, 0.0), steer);
+	}
+	
+	@Test
+	public void testCohesionOneNeighbor() {
+		Vector2D steer = Steering.cohesion(boid, singleBoidMockNeighborhood);
+		assertEquals(new Vector2D(1.0, 0.0), steer);
+	}
+	
+	@Test
+	public void testCohesionMultipleNeighbors() {
+		Vector2D steer = Steering.cohesion(boid, fullMockNeighborhood);
+		assertEquals(new Vector2D(-4/3, -4/3), steer);
 	}
 }
