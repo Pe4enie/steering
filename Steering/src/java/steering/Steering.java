@@ -131,4 +131,35 @@ public class Steering {
 		
 		return Steering.seek(boid, V.add(future, ortho));
 	}
+
+	public static Vector2D separate(Locomotion boid, Neighborhood neighborhood) {
+		return separate(boid, neighborhood, 1 / neighborhood.getRadius());
+	}
+	
+	public static Vector2D separate(Locomotion boid, Neighborhood neighborhood, double scale) {
+		Collection<Locomotion> neighbors = neighborhood.findNearby(boid);
+		
+		if(neighbors.isEmpty())
+			return new Vector2D(0.0, 0.0);
+		//sum the offsets of each neighbor
+		Vector2D steering = new Vector2D(0.0, 0.0);
+		for(Locomotion neighbor : neighbors) {
+			Vector2D repulse = V.mult(scale, V.sub(boid.position(), neighbor.position()));
+			steering = V.add(repulse, steering);
+		}
+		return steering;
+	}
+
+	public static Vector2D cohesion(Locomotion boid, Neighborhood neighborhood) {
+		Collection<Locomotion> neighbors = neighborhood.findNearby(boid);
+
+		if(neighbors.isEmpty())
+			return new Vector2D(0.0, 0.0);
+		Vector2D positions = new Vector2D(0.0, 0.0);
+		for(Locomotion neighbor : neighbors) {
+			positions = V.add(positions, neighbor.position());
+		}		
+		Vector2D center = V.mult(1/neighbors.size(), positions);
+		return Steering.seek(boid, center);
+	}
 }
