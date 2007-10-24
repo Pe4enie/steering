@@ -137,7 +137,7 @@ public class SteeringTest {
 		Collection<Locomotion> flock = Arrays.asList(boid);
 		double radius = 0.5;
 		Locomotion avoider = new SimpleLocomotion(1.0, new Vector2D(0.0, 0.0), new Vector2D(1.0, 0.0));
-		Vector2D steer = Steering.obstacleAvoidance(avoider, radius, flock);
+		Vector2D steer = Steering.avoidObstacle(avoider, radius, flock);
 		assertEquals(new Vector2D(0.0, 0.0), steer);
 	}
 	
@@ -146,7 +146,7 @@ public class SteeringTest {
 		Collection<Locomotion> flock = Arrays.asList(boid);
 		double radius = 2.0;
 		Locomotion avoider = new SimpleLocomotion(1.0, new Vector2D(0.0, 0.0), new Vector2D(2.0, 0.0));
-		Vector2D steer = Steering.obstacleAvoidance(avoider, radius, flock);
+		Vector2D steer = Steering.avoidObstacle(avoider, radius, flock);
 		assertEquals(new Vector2D(0.0, -2.0), steer);		
 	}
 	
@@ -157,7 +157,7 @@ public class SteeringTest {
 		double radius = 2.0;
 		Locomotion avoider = new SimpleLocomotion(1.0, new Vector2D(0.0, 0.0), new Vector2D(3.0, 0.0));
 		Collection<Locomotion> flock = Arrays.asList(obstacle1, obstacle2);
-		Vector2D steer = Steering.obstacleAvoidance(avoider, radius, flock);
+		Vector2D steer = Steering.avoidObstacle(avoider, radius, flock);
 		assertEquals(new Vector2D(0.0, -3.0), steer);
 	}
 	

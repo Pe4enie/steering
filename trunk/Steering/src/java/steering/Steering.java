@@ -89,7 +89,7 @@ public class Steering {
 	 * @param others Other Locomotion objects to avoid if in the boid's path
 	 * @param distance The distance from the boid's velocity vector in order to be considered in the boid's path
 	 */
-	public static Vector2D obstacleAvoidance(Locomotion boid, double distance, Collection<Locomotion> others) {
+	public static Vector2D avoidObstacle(Locomotion boid, double distance, Collection<Locomotion> others) {
 		double closest = V.magnitude(boid.velocity());
 		Vector2D avoid = null;
 		
