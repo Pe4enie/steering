@@ -1,0 +1,65 @@
+<project name="Steering" default="dist" basedir=".">
+    <description>
+        Build, test the Steering project
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="java" location="${src}/java"/>
+  <property name="test" location="${src}/test"/>
+  <property name="build" location="bin"/>
+  <property name="dist"  location="dist"/>
+  <property name="junit" location="/shared/home/nate.young/eclipse/plugins/org.junit4_4.3.1/junit.jar"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${java}" destdir="${build}"/>
+  </target>
+
+  <target name="compile-tests" depends="compile"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${test}" destdir="${build}" classpath="${junit}"/>
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Create the distribution directory -->
+    <mkdir dir="${dist}/lib"/>
+
+    <!-- Put everything in ${build} (except tests) into the Steering-${DSTAMP}.jar file -->
+    <jar jarfile="${dist}/lib/Steering-${DSTAMP}.jar" 
+         basedir="${build}"
+	 excludes="**/*Test*"/>
+  </target>
+
+  <target name="test" depends="compile-tests"
+        description="run test cases" >
+    <junit printsummary="on" haltonfailure="yes">
+      <classpath>
+        <pathelement path="${build}"/>
+	<pathelement location="${junit}"/>
+      </classpath>
+
+      <batchtest fork="yes" haltonfailure="yes">
+        <fileset dir="${test}">
+	  <include name="**/*Test*.java"/>
+	</fileset>
+      </batchtest>
+    </junit>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} and ${dist} directory trees -->
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+</project>
