@@ -228,4 +228,33 @@ public class SteeringTest {
 		Vector2D steer = Steering.align(boid, fullMockNeighborhood);
 		assertEquals(new Vector2D(-2.0, 0.0), steer);
 	}
+	
+	@Test
+	public void testFollowLeader() {
+		Locomotion follower = new SimpleLocomotion(1.0, new Vector2D(-1.0, -1.0), new Vector2D());
+		Locomotion leader = new SimpleLocomotion(1.0, new Vector2D(1.0, 1.0), new Vector2D(0.0, 1.0));
+		
+		Vector2D steer = Steering.followLeader(follower, leader, 1.0, emptyMockNeighborhood, 1.0);
+		
+		assertEquals(new Vector2D(2.0, 1.0), steer);
+	}
+	
+	@Test
+	public void testFollowLeaderInLeadersWay() {
+		Locomotion follower = new SimpleLocomotion(1.0, new Vector2D(1.0, 1.0), new Vector2D());
+		Locomotion leader = new SimpleLocomotion(1.0, new Vector2D(0.0, 0.0), new Vector2D(0.0, 2.0));
+		
+		Vector2D steer = Steering.followLeader(follower, leader, 1.0, emptyMockNeighborhood, 2.0);
+		
+		assertEquals(new Vector2D(2.0, 0.0), steer);
+	}
+	
+	@Test
+	public void testFollowLeaderWithCrowd() {
+		Locomotion leader = new SimpleLocomotion(1.0, new Vector2D(-4.0, -4.0), new Vector2D(-1.0, -1.0));
+		
+		Vector2D steer = Steering.followLeader(boid, leader, Math.sqrt(2.0), fullMockNeighborhood, 1.0);
+		
+		assertEquals(new Vector2D(0.0, 0.0), steer);
+	}
 }
