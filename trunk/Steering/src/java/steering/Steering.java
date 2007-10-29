@@ -18,6 +18,7 @@
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 package steering;
 
+import java.util.Arrays;
 import java.util.Collection;
 
 import vector.V;
@@ -176,5 +177,22 @@ public class Steering {
 		}		
 		Vector2D desired = V.mult((double) 1 / neighbors.size(), velocities);
 		return V.sub(desired, boid.velocity());
+	}
+	
+	/**
+	 * 
+	 * @param offset distance of sought point behind the leader
+	 * @param distance The distance from the leader's velocity vector in order to be considered in the leader's path
+	 * @param neighborhood other boids following leader
+	 */
+	public static Vector2D followLeader(Locomotion boid, Locomotion leader, double offset, Neighborhood neighborhood, double distance) {
+		//check if we're in the leader's way
+		Vector2D avoid = avoidObstacle(leader, distance, Arrays.asList(boid));
+		if(V.magnitude(avoid) != 0)
+			return V.mult(-1, avoid);
+		
+		Vector2D behindLeader = V.add(V.mult(-1 * offset, V.unitOf(leader.velocity())), leader.position());
+		
+		return V.add(seek(boid, behindLeader), separate(boid, neighborhood));
 	}
 }
