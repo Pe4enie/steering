@@ -99,14 +99,15 @@ public class Steering {
 			Vector2D otherVector = V.sub(other.position(), boid.position());
 			
 			//point at which the other object *would* intersect *if* it does 
-			Vector2D intersect = V.project(otherVector, boid.velocity());
+			Vector2D projection = V.project(otherVector, boid.velocity());
+			Vector2D intersect = V.add(boid.position(), projection);
 			
 			Vector2D ortho = V.sub(other.position(), intersect);
 			
 			//check for intersection and that its the closest
 			if(V.magnitude(ortho) < distance && 
-			   V.magnitude(intersect) < closest) {
-				closest = V.magnitude(intersect);
+			   V.magnitude(projection) < closest) {
+				closest = V.magnitude(projection);
 				//to avoid, move perpendicularly away from the obstacle
 				avoid = V.mult(-1 * V.magnitude(boid.velocity()), V.unitOf(ortho));
 			}

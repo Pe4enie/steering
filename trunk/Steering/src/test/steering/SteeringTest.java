@@ -27,6 +27,7 @@ import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
 
+import vector.V;
 import vector.Vector2D;
 
 
@@ -146,6 +147,19 @@ public class SteeringTest {
 		Collection<Locomotion> flock = Arrays.asList(boid);
 		double radius = 2.0;
 		Locomotion avoider = new SimpleLocomotion(1.0, new Vector2D(0.0, 0.0), new Vector2D(2.0, 0.0));
+		Vector2D steer = Steering.avoidObstacle(avoider, radius, flock);
+		assertEquals(new Vector2D(0.0, -2.0), steer);		
+	}
+	
+	@Test
+	public void testSingleIntersectionAtOffset() {
+		Vector2D offset = new Vector2D(50.0, 50.0);
+		Vector2D initPos = V.add(offset, new Vector2D(1.0, 1.0));
+		Locomotion obstacle = new SimpleLocomotion(1.0, initPos, new Vector2D(1.0, 1.0)); 
+		Collection<Locomotion> flock = Arrays.asList(obstacle);
+		double radius = 2.0;
+		initPos = V.add(offset, new Vector2D(0.0, 0.0));
+		Locomotion avoider = new SimpleLocomotion(1.0, initPos, new Vector2D(2.0, 0.0));
 		Vector2D steer = Steering.avoidObstacle(avoider, radius, flock);
 		assertEquals(new Vector2D(0.0, -2.0), steer);		
 	}
