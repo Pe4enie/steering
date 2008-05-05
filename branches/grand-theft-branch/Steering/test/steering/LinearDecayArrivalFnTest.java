@@ -37,14 +37,19 @@ public class LinearDecayArrivalFnTest {
 	}
 	
 	@Test
+	// test that 1st derivative is constant (slope of curve doesn't change)
 	public void testLinearSlopeOfCurve() {
 		double distance0 = 1.8;
-		double speed0 = fn.speedOfArrival(distance0);
 		double distance1 = 2.4;
+		double distance2 = 3.3;
+		
+		double speed0 = fn.speedOfArrival(distance0);
 		double speed1 = fn.speedOfArrival(distance1);
+		double speed2 = fn.speedOfArrival(distance2);
 		
-		double speedRatio = speed1 / speed0;
+		double slope0 = speed1 / speed0;
+		double slope1 = speed2 / speed1;
 		
-		assertEquals(distance1 / distance0, speedRatio);
+		assertEquals(slope0, slope1);
 	}
 }
