@@ -4,11 +4,10 @@
     </description>
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
-  <property name="java" location="${src}/java"/>
-  <property name="test" location="${src}/test"/>
+  <property name="test" location="test"/>
   <property name="build" location="bin"/>
   <property name="dist"  location="dist"/>
-  <property name="junit" location="/shared/home/nate.young/eclipse/plugins/org.junit4_4.3.1/junit.jar"/>
+  <property name="junit" location="lib/junit.jar"/>
 
   <target name="init">
     <!-- Create the time stamp -->
@@ -20,13 +19,13 @@
   <target name="compile" depends="init"
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${java}" destdir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}"/>
   </target>
 
   <target name="compile-tests" depends="compile"
         description="compile the source " >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${test}" destdir="${build}" classpath="${junit}"/>
+    <javac srcdir="${test}" destdir="${build}" classpath="${junit}:${build}"/>
   </target>
 
   <target name="dist" depends="compile"
