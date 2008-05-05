@@ -88,4 +88,43 @@ public class SteeringTest {
 		
 		assertTrue(speedInside < speedOutside);
 	}
+	
+	@Test
+	public void testPathFollowInsidePathRadius() {
+		seeker.setVelocity(new Vector3D(1.0, 1.0, 1.0));
+		
+		Vector3D[] path = new Vector3D[] { 
+				new Vector3D(-4.0, 6.0, 0.0),
+				new Vector3D(0.0, 4.0, 0.0),
+				new Vector3D(0.5, 0.0, 0.0),
+				new Vector3D(0.0, -3.0, 0.0),
+				new Vector3D(3.0, 0.0, 0.0)
+		};
+		
+		Vector3D steer = Steering.followPath(seeker, path, 5.0, 1.0, 2.0);
+		
+		assertEquals(0.0, steer.x);
+		assertEquals(0.0, steer.y);
+		assertEquals(0.0, steer.z);
+	}
+	
+	@Test
+	public void testPathFollowOutsidePathRadius() {
+		seeker.setVelocity(new Vector3D(1.0, 1.0, 1.0));
+		double vFactor = 5.0;
+		Vector3D point = V3.add(seeker.position(), V3.mult(vFactor , seeker.velocity()));
+
+		Vector3D[] path = new Vector3D[] { 
+				new Vector3D(0.0, 0.0, 0.0),
+				new Vector3D(0.0, 10.0, 0.0),
+				new Vector3D(15.0, 15.0, 0.0),
+		};
+		
+		Vector3D steer = Steering.followPath(seeker, path, 5.0, vFactor, 2.0);
+		Vector3D seek = Steering.seek(seeker, V3.projectPolyline(point, path), 2.0);
+		
+		assertEquals(seek.x, steer.x);
+		assertEquals(seek.y, steer.y);
+		assertEquals(seek.z, steer.z);
+	}
 }
