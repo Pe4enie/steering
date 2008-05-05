@@ -99,10 +99,54 @@ public class V3 {
     	return V3.mult(length, V3.unitOf(vector));
     }
     
-    ///**
-    // * Projects one vector onto another
-    // */
-    //public static Vector3D project(Vector3D vector, Vector3D onto) {
-    //	return mult((dot(vector, onto) / dot(onto, onto)), onto);
-    //}
+    /**
+     * Projects one vector onto another
+     */
+    public static Vector3D project(Vector3D vector, Vector3D onto) {
+    	return mult((dot(vector, onto) / dot(onto, onto)), onto);
+    }
+
+    public static Vector3D projectPolyline(Vector3D point, Vector3D[] polyline) {
+    	if(polyline.length < 2)
+    		return null;
+    	Vector3D closest = null;
+    	double minDist = 0;
+    	for(int n = 1; n < polyline.length; n++) {
+    		Vector3D projection = projectSegment(point, polyline[n-1], polyline[n]);
+    		if(projection == null)
+    			continue;
+    		double distance = V3.magnitude(V3.sub(projection, point));
+    		if(closest == null || distance < minDist) {
+    			minDist = distance;
+    			closest = projection;
+    		}
+    	}
+    	return closest;
+    }
+    
+	public static Vector3D projectSegment(Vector3D point, Vector3D vertex0, Vector3D vertex1) {
+		//find 0,0,0-centered vector
+		Vector3D line = V3.sub(vertex1, vertex0);
+		//translate point by same amount as vector
+		Vector3D transPoint = V3.sub(point, vertex0);
+		//project and translate back to its original position
+		Vector3D projection = V3.add(vertex0, project(transPoint, line));
+
+		//bounding check
+		if(!between(projection.x, vertex1.x, vertex0.x) ||
+		   !between(projection.y, vertex1.y, vertex0.y) ||
+		   !between(projection.z, vertex1.z, vertex0.z))
+			return null;
+		return projection;
+	}
+	
+	public static boolean between(double p, double v1, double v2) {
+		double diff = v2 - v1;
+		double diffHigh = v2 - p;
+		double diffLow = p - v1;
+		
+		return (diff == 0 && p == v1) || 
+			(diff > 0 && diffHigh >= 0 && diffLow >= 0) || 
+			(diff < 0 && diffHigh <= 0 && diffLow <= 0);
+	}
 }
