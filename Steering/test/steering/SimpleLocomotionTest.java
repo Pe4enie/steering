@@ -67,6 +67,20 @@ public class SimpleLocomotionTest {
 	}
 	
 	@Test
+	public void testZeroVelocityDoesntChangeOrientation() {
+		simple.setVelocity(new Vector3D(-1.0, 0.0, 0.0));
+		assertEquals(-1.0, simple.velocity().x);
+		simple.orient();
+		Vector3D[] oldOrientation = simple.getOrientation();
+		simple.setVelocity(new Vector3D(0.0, 0.0, 0.0));
+		simple.orient();
+		Vector3D[] orientation = simple.getOrientation();
+		assertEquals(oldOrientation[SimpleLocomotion.FORWARD].x, orientation[SimpleLocomotion.FORWARD].x);
+		assertEquals(oldOrientation[SimpleLocomotion.SIDE].y, orientation[SimpleLocomotion.SIDE].y);
+		assertEquals(oldOrientation[SimpleLocomotion.UP].z, orientation[SimpleLocomotion.UP].z);
+	}
+	
+	@Test
 	public void testMove() {
 		simple.setVelocity(new Vector3D(1.0, 1.0, 1.0));
 		simple.move();

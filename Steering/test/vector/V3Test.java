@@ -82,6 +82,16 @@ public class V3Test {
 	}
 	
 	@Test
+	public void testAngle() {
+		Vector3D origin = new Vector3D(0.0, 0.0, 0.0);
+		assertEquals(Math.toRadians(45), V3.angle(origin, new Vector3D(1.0, 1.0, 0.0)));
+		assertEquals(Math.toRadians(90), V3.angle(origin, new Vector3D(0.0, 1.0, 0.0)));
+		assertEquals(Math.toRadians(135), V3.angle(origin, new Vector3D(-1.0, 1.0, 0.0)));
+		assertEquals(Math.toRadians(180), V3.angle(origin, new Vector3D(-1.0, 0.0, 0.0)));
+		assertEquals(Math.toRadians(-90), V3.angle(origin, new Vector3D(0.0, -1.0, 0.0)));
+	}
+	
+	@Test
 	public void testResizeTo() {
 		Vector3D v = V3.resizeTo(2.0, new Vector3D(5.0, 5.0, 5.0)); 
 		double magnitude = V3.magnitude(v);

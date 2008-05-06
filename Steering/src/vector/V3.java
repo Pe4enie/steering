@@ -95,6 +95,14 @@ public class V3 {
 		return vector;
     }
 
+    public static double angle(Vector3D v1) {
+    	return angle(new Vector3D(0.0, 0.0, 0.0), v1);
+    }
+    
+    public static double angle(Vector3D v1, Vector3D v2) {
+    	return Math.atan2(v2.y, v2.x) - Math.atan2(v1.y, v1.x);
+    }
+    
     public static Vector3D resizeTo(double length, Vector3D vector) {
     	return V3.mult(length, V3.unitOf(vector));
     }

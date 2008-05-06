@@ -93,6 +93,8 @@ public class SimpleLocomotion {
     }
 
     public void orient() {
+    	if(this.velocity.x == 0.0 && this.velocity.y == 0.0 && this.velocity.z == 0.0)
+    		return;
     	orientation[FORWARD] = V3.unitOf(this.velocity);
     	Vector3D approxUp = V3.unitOf(orientation[UP]);
     	orientation[SIDE] = V3.cross(orientation[FORWARD], approxUp);
