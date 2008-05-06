@@ -56,7 +56,7 @@ public class Steering {
 		Vector3D futurePos = V3.add(seeker.position(), V3.mult(vFactor, seeker.velocity()));
 		//project onto path
 		Vector3D projection = V3.projectPolyline(futurePos, path);
-		if(V3.magnitude(V3.sub(projection, seeker.position())) < pathRadius) {
+		if(projection == null || V3.magnitude(V3.sub(projection, seeker.position())) < pathRadius) {
 			return new Vector3D(0.0, 0.0, 0.0);
 		}
 		return Steering.seek(seeker, projection, speed);
