@@ -127,4 +127,62 @@ public class SteeringTest {
 		assertEquals(seek.y, steer.y);
 		assertEquals(seek.z, steer.z);
 	}
+	
+	@Test
+	public void testPathFollowWithinRadiusReturnsSeek() {
+		// path is horizontal line 0 - 15
+		double radius = 5.0;
+		Vector3D[] points = new Vector3D[] {
+				new Vector3D(0.0, 0.0, 0.0),
+				new Vector3D(15.0, 0.0, 0.0)
+		};
+		CircularPath path = new CircularPath(points, radius);
+		path.next();
+		
+		// boid starts at origin, with unit x component velocity
+		Vector3D initPos = new Vector3D(0.0, 0.0, 0.0);
+		Vector3D initVelo = new Vector3D(1.0, 0.0, 0.0);
+		seeker = new SimpleLocomotion(1.0, initPos, initVelo, 1.0, 1.0);
+		
+		Vector3D seek = Steering.seek(seeker, points[0], 2.0);
+		Vector3D steer = Steering.followPath(seeker, path, 5.0, 1.0, 2.0);
+		
+		assertEquals(seek.x, steer.x);
+		assertEquals(seek.y, steer.y);
+		assertEquals(seek.z, steer.z);
+	}
+	
+	@Test
+	public void testPathOutsideRadiusAddsProjectionSeek() {
+		// path is horizontal line 0 - 15
+		double radius = 5.0;
+		Vector3D[] points = new Vector3D[] {
+				new Vector3D(0.0, 0.0, 0.0),
+				new Vector3D(15.0, 0.0, 0.0)
+		};
+		CircularPath path = new CircularPath(points, radius);
+		path.next();
+		
+		// boid starts at origin, with unit x/y component velocity
+		Vector3D initPos = new Vector3D(0.0, 0.0, 0.0);
+		Vector3D initVelo = new Vector3D(3.0, 4.0, 0.0);
+		seeker = new SimpleLocomotion(1.0, initPos, initVelo, 1.0, 1.0);
+		
+		Vector3D seek = Steering.seek(seeker, points[0], 2.0);
+		Vector3D steer = Steering.followPath(seeker, path, 5.0, 1.0, 5.0);
+		
+		// projection is x component
+		Vector3D proj = new Vector3D(3.0, 0.0, 0.0);
+		Vector3D adjust = V3.sub(proj, initVelo);
+		Vector3D combined = V3.add(seek, adjust);
+		
+		assertEquals(combined.x, steer.x);
+		assertEquals(combined.y, steer.y);
+		assertEquals(combined.z, steer.z);		
+	}
+	
+	@Test
+	public void testWithinSwitchDistanceChangesPoint() {
+		
+	}
 }

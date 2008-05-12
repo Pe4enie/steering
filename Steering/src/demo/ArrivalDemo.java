@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.util.Stack;
 
 import org.jdesktop.jdic.screensaver.SimpleScreensaver;
 
@@ -27,6 +28,9 @@ public class ArrivalDemo extends SimpleScreensaver {
 	
 	private Shape goal = new CenteredEllipse(0.0, 0.0, 100.0, 100.0);
 	private Shape vehicle = new CenteredRectangle(0.0, 0.0, 40, 20);
+	private Shape driver = new CenteredEllipse(0.0, 0.0, 9.0, 9.0);
+
+	private Stack<AffineTransform> transformStack = new Stack<AffineTransform>();
 	
 	public ArrivalDemo() {
 		Vector3D initPos = new Vector3D(500.0, 100.0, 0.0);	
@@ -49,34 +53,49 @@ public class ArrivalDemo extends SimpleScreensaver {
 		
 		Graphics2D g2 = (Graphics2D) g;
 		
-		AffineTransform base = g2.getTransform();
-		
 		// draw the goal
+		transformStack.push(g2.getTransform());
 		g2.translate(target.x, target.y);
 		g2.setColor(Color.BLUE);
 		g2.draw(goal);
-		g2.setTransform(base);
+		g2.setTransform(transformStack.pop());
 
-		// draw the first car
+		// position the first car
+		transformStack.push(g2.getTransform());
 		g2.translate(car.position().x, car.position().y);
 		double angle = V3.angle(car.getOrientation()[SimpleLocomotion.FORWARD]);
 		g2.rotate(angle);
+		
+		// position and draw the driver
+		transformStack.push(g2.getTransform());
 		g2.setColor(Color.RED);
+		g2.translate(10, -5);
+		g2.fill(driver);
+		g2.setTransform(transformStack.pop());
+		
 		g2.draw(vehicle);
-		g2.setTransform(base);
+		g2.setTransform(transformStack.pop());
 		
 		// steer the first car
-		Vector3D steeringForce = Steering.arrive(car, target, 10.0, 100.0, new LinearDecayArrivalFn(10.0, 10.0, 100.0));
+		Vector3D steeringForce = Steering.arrive(car, target, 10.0, 100.0, new LinearDecayArrivalFn(10.0, 10.0, 400.0));
 		car.steer(steeringForce);
 		car.move();
 		
-		// draw the second car
+		// position the second car
+		transformStack.push(g2.getTransform());
 		g2.translate(car2.position().x, car2.position().y);
 		angle = V3.angle(car2.getOrientation()[SimpleLocomotion.FORWARD]);
 		g2.rotate(angle);
+		
+		// position and draw the driver
+		transformStack.push(g2.getTransform());
 		g2.setColor(Color.GREEN);
+		g2.translate(10, -5);
+		g2.fill(driver);
+		g2.setTransform(transformStack.pop());
+		
 		g2.draw(vehicle);
-		g2.setTransform(base);
+		g2.setTransform(transformStack.pop());
 		
 		// steer the second car
 		steeringForce = Steering.arrive(car2, target, 10.0, 100.0, new LinearDecayArrivalFn(10.0, 10.0, 100.0));
