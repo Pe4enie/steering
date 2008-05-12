@@ -61,4 +61,23 @@ public class Steering {
 		}
 		return Steering.seek(seeker, projection, speed);
 	}
+
+	public static Vector3D followPath(SimpleLocomotion seeker, Path path,
+			double switchDist, double vFactor, double speed) {
+		double distFrom = V3.magnitude(V3.sub(path.curr(), seeker.position()));
+		if(distFrom < switchDist) {
+			path.next();
+		}
+		
+		Vector3D futurePos = V3.add(seeker.position(), V3.mult(vFactor, seeker.velocity()));
+		Vector3D segment = V3.sub(path.prev(), path.curr());
+		Vector3D projection = V3.project(futurePos, segment);
+		Vector3D adjust = V3.sub(projection, futurePos);
+		
+		if(V3.magnitude(adjust) < path.getRadius()) {
+			return V3.add(seek(seeker, path.curr(), speed), adjust);
+		}
+		
+		return seek(seeker, path.curr(), speed);
+	}
 }
