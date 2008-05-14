@@ -10,6 +10,7 @@ import java.util.Random;
 
 import saver.ScreensaverBase;
 import steering.SimpleLocomotion;
+import vector.V3;
 import vector.Vector3D;
 
 public class BouncingBallsDemo extends ScreensaverBase {
@@ -49,13 +50,14 @@ public class BouncingBallsDemo extends ScreensaverBase {
 	
 	@Override
 	public void render(Graphics2D g2) {
+		collideWithBalls(balls, ballRadius, ballMass);
 		for(SimpleLocomotion ball : balls) {
 			g2.setColor(Color.GREEN);		
 			fillAt(g2, circle, ball.position().x, ball.position().y);
 			
-			ball.move();
 			collideWithWall(ball, ballRadius, getContext().getComponent().getWidth(),
 											  getContext().getComponent().getHeight());
+			ball.move();
 		}
 	}
 	
@@ -69,5 +71,60 @@ public class BouncingBallsDemo extends ScreensaverBase {
 		if((y - radius < 0) || (y + radius > height)) {
 			ball.setVelocity(new Vector3D(ball.velocity().x, -1 * ball.velocity().y, 0.0));
 		}			
+	}
+	
+	private static void collideWithBalls(List<SimpleLocomotion> balls, double radius, double ballMass) {
+		List<SimpleLocomotion> collided = new ArrayList<SimpleLocomotion>();
+		for(int index = 0; index < balls.size(); index++) {
+			for(int i = 0; i < balls.size(); i++) {
+				if(i == index)
+					continue;
+				if(intersecting(balls.get(index), balls.get(i), radius)) {
+					System.out.println("Collision!");
+					collided.add(balls.remove(i));
+					collided.add(balls.remove(index));
+					index = -1; // reset index
+					break;
+				}
+			}
+		}
+		
+		//collide all pairs of balls in collided
+		for(int i = 0; i < collided.size(); i += 2) {
+			collide(balls.get(i), balls.get(i + 1), ballMass, ballMass);
+		}
+		
+		//recombine list
+		balls.addAll(collided);
+	}
+
+	private static boolean intersecting(SimpleLocomotion ball, SimpleLocomotion other, double radius) {
+		double distance = V3.magnitude(V3.sub(other.position(), ball.position()));
+		return distance < (radius * 2);
+	}
+	
+	private static void collide(SimpleLocomotion one, SimpleLocomotion two, double mass1, double mass2) {
+		Vector3D lineOfForce = V3.sub(two.position(), one.position());
+		Vector3D along1 = V3.project(one.velocity(), lineOfForce);
+		Vector3D tangent1 = V3.sub(one.velocity(), along1);
+		
+		lineOfForce = V3.mult(-1, lineOfForce);
+		Vector3D along2 = V3.project(two.velocity(), lineOfForce);
+		Vector3D tangent2 = V3.sub(two.velocity(), along2);
+		
+		double v1 = elasticCollision(mass1, V3.magnitude(along1),
+									 mass2, V3.magnitude(along2));
+		double v2 = elasticCollision(mass2, V3.magnitude(along2),
+									 mass1, V3.magnitude(along1));
+		
+		along1 = V3.resizeTo(v1, along1);
+		along2 = V3.resizeTo(v2, along2);
+		
+		one.setVelocity(V3.add(along1, tangent1));
+		two.setVelocity(V3.add(along2, tangent2));
+	}
+
+	private static double elasticCollision(double mass1, double velo1, double mass2, double velo2) {
+		return ((velo1 * (mass1 - mass2)) + 2 * mass2 * velo2) / (mass1 + mass2);
 	}
 }
