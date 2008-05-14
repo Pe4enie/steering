@@ -28,8 +28,12 @@ public class ArriveBehindDemo extends SimpleScreensaver {
 	private Stack<AffineTransform> transformStack = new Stack<AffineTransform>();
 	private Image buffer;
 
+	private double carLength = 40.0;
+	private double followDist = 50.0;
+	
 	private Vector3D target0 = new Vector3D(250.0, 250.0, 0.0);
 	private Vector3D target1 = new Vector3D(350.0, 350.0, 0.0);
+	
 	private LinearDecayArrivalFn arrivalFn;
 	
 	public ArriveBehindDemo() {
@@ -57,7 +61,7 @@ public class ArriveBehindDemo extends SimpleScreensaver {
 		c.paint(g2);
 				
 		Vector3D backwards = V3.mult(-1, car0.getOrientation()[SimpleLocomotion.FORWARD]);
-		Vector3D behind = V3.add(car0.position(), V3.resizeTo(50.0, backwards));
+		Vector3D behind = V3.add(car0.position(), V3.resizeTo(followDist, backwards));
 		
 		// draw goals
 		drawTarget(g2, target0.x, target0.y, 20.0, Color.RED);
@@ -74,15 +78,9 @@ public class ArriveBehindDemo extends SimpleScreensaver {
 		car0.move();
 
 		// steer second car
-		Vector3D arriveForce = Steering.arrive(car1, behind, 10.0, 100.0, arrivalFn);
-		steeringForce = Steering.arrive(car1, target1, 10.0, 100.0, arrivalFn);
-		double distance = V3.magnitude(V3.sub(car1.position(), car0.position()));
-		if(distance < 100.0) {
-			car1.steer(arriveForce);
-		}
-		else {
-			car1.steer(steeringForce);
-		}
+		steeringForce = Steering.arriveBehind(car1, target1, 10.0, 100.0, arrivalFn,
+				car0, followDist, 100.0, arrivalFn);
+		car1.steer(steeringForce);
 		car1.move();
 
 		// draw the buffered image to the screen
@@ -98,7 +96,7 @@ public class ArriveBehindDemo extends SimpleScreensaver {
 	}
 	
 	private void drawVehicle(Graphics2D g2, SimpleLocomotion car, Color color) {
-		Shape vehicle = new CenteredRectangle(0.0, 0.0, 40, 20);
+		Shape vehicle = new CenteredRectangle(0.0, 0.0, carLength, carLength / 2);
 		Shape driver = new CenteredEllipse(0.0, 0.0, 9.0, 9.0);
 		
 		g2.setColor(color);

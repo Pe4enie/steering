@@ -51,6 +51,18 @@ public class Steering {
     	return Steering.seek(seeker, destination, speed);
     }
 
+    public static Vector3D arriveBehind(SimpleLocomotion seeker, Vector3D destination,
+    		double speed, double slowRadius, ArrivalFunction fn, 
+    		SimpleLocomotion ahead, double followDist, double followRadius, 
+    		ArrivalFunction followFn) {
+    	Vector3D backwards = V3.mult(-1, ahead.getOrientation()[SimpleLocomotion.FORWARD]);
+    	Vector3D behind = V3.add(ahead.position(), V3.resizeTo(followDist, backwards));
+    	double distance = V3.magnitude(V3.sub(ahead.position(), seeker.position()));
+    	if(distance < followDist * 2)
+    		return arrive(seeker, behind, speed, followRadius, followFn);
+    	return arrive(seeker, destination, speed, slowRadius, fn);
+    }
+    
 	public static Vector3D followPath(SimpleLocomotion seeker, Vector3D[] path, double pathRadius, double vFactor, double speed) {
 		//future position from vFactor, velocity and position
 		Vector3D futurePos = V3.add(seeker.position(), V3.mult(vFactor, seeker.velocity()));
