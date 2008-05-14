@@ -49,9 +49,9 @@ public class SimpleLocomotion {
     		double maxForce, double maxSpeed) {
     	this.mass = mass;
     	this.position = pos;
-    	this.velocity = v;
     	this.maxForce = maxForce;
     	this.maxSpeed = maxSpeed;
+    	this.setVelocity(v);
     	this.orientation = new Vector3D[] { null, null, new Vector3D(0.0, 0.0, 1.0) };
     	orient();
     }
@@ -60,9 +60,9 @@ public class SimpleLocomotion {
     		double maxForce, double maxSpeed, Vector3D[] orientation) {
     	this.mass = mass;
     	this.position = pos;
-    	this.velocity = v;
     	this.maxForce = maxForce;
     	this.maxSpeed = maxSpeed;
+    	this.setVelocity(v);
     	this.orientation = orientation;
     }
 
