@@ -13,7 +13,19 @@ import org.jdesktop.jdic.screensaver.SimpleScreensaver;
 public abstract class ScreensaverBase extends SimpleScreensaver {
 
 	protected Stack<AffineTransform> transformStack = new Stack<AffineTransform>();
+	
+	protected double width;
+	protected double height;
+	
 	private Image buffer;
+	
+	@Override
+	public void init() {
+		super.init();
+		
+		width = getContext().getComponent().getWidth();
+		height = getContext().getComponent().getHeight();
+	}
 	
 	@Override
 	public void paint(Graphics g) {
