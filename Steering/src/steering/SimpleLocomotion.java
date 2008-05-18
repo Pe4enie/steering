@@ -40,10 +40,10 @@ public class SimpleLocomotion {
     private double maxForce; // maximum amount of change in velocity
     private double maxSpeed; // maximum allowable velocity
 
-    private double mass;
-    private Vector3D position;
-    private Vector3D velocity;
-    private Vector3D[] orientation;
+    protected double mass;
+    protected Vector3D position;
+    protected Vector3D velocity;
+    protected Vector3D[] orientation;
 
     public SimpleLocomotion(double mass, Vector3D pos, Vector3D v, 
     		double maxForce, double maxSpeed) {
