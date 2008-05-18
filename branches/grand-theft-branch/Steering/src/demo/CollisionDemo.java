@@ -17,15 +17,12 @@ import vector.Vector3D;
 
 public class CollisionDemo extends ScreensaverBase {
 
-	private int numberOfBalls = 2;
+	private int numberOfBalls = 10;
 	
 	private double mass = 1.0;
 	private double maxForce = 100.0;
 	private double maxSpeed = 100.0;
-	private double radius = 40.0;
-	
-	private double xoffset = 200.0;
-	private double yoffset = 100.0;
+	private double radius = 30.0;
 	
 	private Shape circle = new CenteredEllipse(0.0, 0.0, radius * 2, radius * 2);
 	
@@ -42,13 +39,17 @@ public class CollisionDemo extends ScreensaverBase {
 		Vector3D initPos, initVelo;
 		double x, y;
 		
+		int w = getContext().getComponent().getWidth();
+		int h = getContext().getComponent().getHeight();
+		
 		for(int i = 0; i < numberOfBalls; i++) {
-			x = random.nextDouble() * (width - 2 * radius) + radius;
-			y = random.nextDouble() * (height - 2 * radius) + radius;
+			x = random.nextDouble() * (w - 2 * radius) + radius;
+			y = random.nextDouble() * (h - 2 * radius) + radius;
 			
 			initPos = new Vector3D(x, y, 0.0);
 			initVelo = new Vector3D(1.0, 1.0, 0.0);
 			Orb ball = new Orb(mass, initPos, initVelo, radius, maxForce, maxSpeed);
+			
 			balls.add(ball);
 		}
 	}
@@ -58,33 +59,46 @@ public class CollisionDemo extends ScreensaverBase {
 		// draw all balls
 		g2.setColor(Color.GREEN);
 		for(Orb ball : balls) {
-			fillAt(g2, circle, ball.position().x + xoffset, ball.position().y + yoffset);
+			fillAt(g2, circle, ball.position().x, ball.position().y);
 		}
 		
 		// check for collision with balls
-		Orb green = balls.get(0);
-		Orb blue = balls.get(1);
-		if(intersecting(green, blue)) {
-			Vector3D[] results = 
-				Physics.collide(green.mass(), green.position(), green.velocity(),
-							    blue.mass(), blue.position(), blue.velocity());
-			
-			green.setVelocity(results[0]);
-			blue.setVelocity(results[1]);
+		for(Orb ball : balls) {
+			if(ball.collided)
+				continue;
+			for(Orb other : balls) {
+				if(ball == other || other.collided)
+					continue;
+				if(intersecting(ball, other)) {
+					Vector3D[] result =
+						Physics.collide(ball.mass(), ball.position(), ball.velocity(), 
+									    other.mass(), other.position(), other.velocity());
+					
+					ball.setVelocity(result[0]);
+					other.setVelocity(result[1]);
+					
+					ball.collided = true;
+					other.collided = true;
+				}
+			}
 		}
-		collideWithWall(green);
-		collideWithWall(blue);
 		
-		// update all ball's positions
+		// check all balls for collision with wall
+		for(Orb ball : balls) {
+			collideWithWall(ball);
+		}
+		
+		// update all ball's positions, clear collided flag
 		for(Orb ball : balls) {
 			ball.move();
+			ball.collided = false;
 		}
 	}
 
 	private void collideWithWall(Orb orb) {
 		// check for collision with walls
-		double x = orb.position().x + xoffset;
-		double y = orb.position().y + yoffset;
+		double x = orb.position().x;
+		double y = orb.position().y;
 		
 		if((x - orb.radius() < 0) || (x + orb.radius() > width)) {
 			orb.setVelocity(new Vector3D(-1 * orb.velocity().x, orb.velocity().y, 0.0));

@@ -7,6 +7,8 @@ public class Orb extends SimpleLocomotion {
 
 	protected double radius;
 	
+	public boolean collided;
+	
 	public Orb(double mass, Vector3D pos, Vector3D v, 
 			double radius, double maxForce, double maxSpeed) {
 		super(mass, pos, v, maxForce, maxSpeed);
