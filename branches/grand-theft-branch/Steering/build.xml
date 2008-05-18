@@ -8,7 +8,7 @@
   <property name="build" location="bin"/>
   <property name="dist"  location="dist"/>
   <property name="junit" location="lib/junit.jar"/>
-  <property name="screensaver.class" value="demo.BouncingBallsDemo" />
+  <property name="screensaver.class" value="demo.CollisionDemo" />
   <property name="debug.params" value="" />
 
   <target name="init">
