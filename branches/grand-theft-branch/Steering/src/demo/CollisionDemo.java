@@ -3,8 +3,10 @@ package demo;
 import geom.CenteredEllipse;
 
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -50,6 +52,22 @@ public class CollisionDemo extends ScreensaverBase {
 			initVelo = new Vector3D(1.0, 1.0, 0.0);
 			Orb ball = new Orb(mass, initPos, initVelo, radius, maxForce, maxSpeed);
 			
+			
+			// check that it is not overlapping any other balls
+			boolean overlapping = false;
+			do {
+				overlapping = false;
+				for(Orb other : balls) {
+					if(intersecting(ball, other)) {
+						overlapping = true;
+						x = ((width - 2 * radius) * random.nextDouble()) + radius;
+						y = ((height - 2 * radius) * random.nextDouble()) + radius; 
+						ball.setPosition(new Vector3D(x, y, 0.0));
+						break;
+					}
+				}
+			} while(overlapping);
+
 			balls.add(ball);
 		}
 	}
@@ -57,8 +75,10 @@ public class CollisionDemo extends ScreensaverBase {
 	@Override
 	public void render(Graphics2D g2) {		
 		// draw all balls
-		g2.setColor(Color.GREEN);
 		for(Orb ball : balls) {
+			Point2D topLeft = new Point2D.Double(-radius, -radius);
+			Point2D center = new Point2D.Double(radius, radius);
+			g2.setPaint(new GradientPaint(topLeft, Color.WHITE, center, Color.GREEN));
 			fillAt(g2, circle, ball.position().x, ball.position().y);
 		}
 		
@@ -69,16 +89,16 @@ public class CollisionDemo extends ScreensaverBase {
 			for(Orb other : balls) {
 				if(ball == other || other.collided)
 					continue;
-				if(intersecting(ball, other)) {
+				if(intersecting(ball, other)) {					
 					Vector3D[] result =
 						Physics.collide(ball.mass(), ball.position(), ball.velocity(), 
 									    other.mass(), other.position(), other.velocity());
 					
 					ball.setVelocity(result[0]);
 					other.setVelocity(result[1]);
-					
+
 					ball.collided = true;
-					other.collided = true;
+					other.collided = true;				
 				}
 			}
 		}
