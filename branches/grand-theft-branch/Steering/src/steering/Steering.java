@@ -38,6 +38,10 @@ public class Steering {
     		V3.resizeTo(speed, V3.sub(desired, seeker.position()));
     	return V3.sub(desiredVelocity, seeker.velocity());
     }
+    
+    public static Vector3D flee(SimpleLocomotion fleer, Vector3D target, double speed) {
+    	return V3.mult(-1, seek(fleer, target, speed));
+    }
 
     /**
      * Return a steering vector that reduces the seeker's velocity
