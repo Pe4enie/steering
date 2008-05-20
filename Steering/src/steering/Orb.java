@@ -6,8 +6,9 @@ import vector.Vector3D;
 public class Orb extends SimpleLocomotion {
 
 	protected double radius;
-	
+
 	public boolean collided;
+	public int rebound = 0;
 	
 	public Orb(double mass, Vector3D pos, Vector3D v, 
 			double radius, double maxForce, double maxSpeed) {
