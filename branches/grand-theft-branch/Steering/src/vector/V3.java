@@ -157,4 +157,8 @@ public class V3 {
 			(diff > 0 && diffHigh >= 0 && diffLow >= 0) || 
 			(diff < 0 && diffHigh <= 0 && diffLow <= 0);
 	}
+
+	public static double distance(Vector3D vector, Vector3D other) {
+		return magnitude(sub(other, vector));
+	}
 }
