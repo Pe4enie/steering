@@ -43,6 +43,15 @@ public class Steering {
     	return V3.mult(-1, seek(fleer, target, speed));
     }
 
+    public static Vector3D pursue(SimpleLocomotion seeker, SimpleLocomotion quarry, double speed, int t) {
+    	Vector3D future = V3.add(quarry.position(), V3.mult(t, quarry.velocity()));
+    	return seek(seeker, future, speed);
+    }
+    
+    public static Vector3D evade(SimpleLocomotion fleer, SimpleLocomotion pursuer, double speed, int t) {
+    	return V3.mult(-1, pursue(fleer, pursuer, speed, t));
+    }
+    
     /**
      * Return a steering vector that reduces the seeker's velocity
      * as it approaches the given destination
