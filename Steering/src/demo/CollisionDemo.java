@@ -34,42 +34,50 @@ public class CollisionDemo extends ScreensaverBase {
 	public void init() {
 		super.init();
 	
-		Random random = new Random();
-		
 		balls = new ArrayList<Orb>();
 		
-		Vector3D initPos, initVelo;
-		double x, y;
-		
-		int w = getContext().getComponent().getWidth();
-		int h = getContext().getComponent().getHeight();
+		Vector3D initVelo;
+
+		List<Vector3D> initPos = randomStartingPositions(numberOfBalls, width, height);
 		
 		for(int i = 0; i < numberOfBalls; i++) {
-			x = random.nextDouble() * (w - 2 * radius) + radius;
-			y = random.nextDouble() * (h - 2 * radius) + radius;
-			
-			initPos = new Vector3D(x, y, 0.0);
 			initVelo = new Vector3D(1.0, 1.0, 0.0);
-			Orb ball = new Orb(mass, initPos, initVelo, radius, maxForce, maxSpeed);
+			Orb ball = new Orb(mass, initPos.get(i), initVelo, radius, maxForce, maxSpeed);			
 			
+			balls.add(ball);
+		}
+	}
+	
+	private List<Vector3D> randomStartingPositions(int num, double width, double height) {
+		List<Vector3D> vectors = new ArrayList<Vector3D>(num);
+		
+		Random random = new Random();
+		double x, y;
+		
+		for(int i = 0; i < num; i ++) {
+			x = random.nextDouble() * (width - 2 * radius) + radius;
+			y = random.nextDouble() * (height - 2 * radius) + radius;
 			
-			// check that it is not overlapping any other balls
+			Vector3D vector = new Vector3D(x, y, 0);
+			
 			boolean overlapping = false;
 			do {
 				overlapping = false;
-				for(Orb other : balls) {
-					if(intersecting(ball, other)) {
+				for(Vector3D other : vectors) {
+					double distance = V3.distance(vector, other);
+					if(distance < 2 * radius) {
 						overlapping = true;
-						x = ((width - 2 * radius) * random.nextDouble()) + radius;
-						y = ((height - 2 * radius) * random.nextDouble()) + radius; 
-						ball.setPosition(new Vector3D(x, y, 0.0));
+						x = random.nextDouble() * (width - 2 * radius) + radius;
+						y = random.nextDouble() * (height - 2 * radius) + radius;
+						vector = new Vector3D(x, y, 0.0);
 						break;
 					}
 				}
 			} while(overlapping);
-
-			balls.add(ball);
+			
+			vectors.add(vector);
 		}
+		return vectors;
 	}
 	
 	@Override
