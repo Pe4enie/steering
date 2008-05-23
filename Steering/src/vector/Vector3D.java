@@ -19,6 +19,8 @@
 
 package vector;
 
+import vector.Plane.Isxn;
+
 /**
  * Vector class useful for manipulating and 
  * representing positions and vectors in 2 dimensional space
@@ -31,6 +33,8 @@ public class Vector3D {
     public double y;
     public double z;
 	
+    public Isxn isxn = Isxn.NONE;
+    
     public Vector3D() {	}
 
     public Vector3D(double x, double y, double z) {
@@ -38,4 +42,9 @@ public class Vector3D {
     	this.y = y;
     	this.z = z;
     }
+
+	public Vector3D(double x, double y, double z, Isxn isxn) {
+		this(x, y, z);
+		this.isxn = isxn;
+	}
 }
