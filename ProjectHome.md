@@ -1,0 +1,1 @@
+This project is an attempt to implement the ideas described in Craig Reynolds paper "Steering Behavior for Autonomous Characters"
